@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image to Prompt</title>
+</head>
+<body>
+  <h1>Image to Prompt</h1>
+
+  <input type="text" id="imgUrl" placeholder="Enter image URL" size="70">
+  <select id="lang">
+    <option value="en">English</option>
+    <option value="id">Indonesian</option>
+  </select>
+  <select id="model">
+    <option value="general">General</option>
+    <option value="midjourney">MidJourney</option>
+    <option value="dalle">DALL·E</option>
+  </select>
+
+  <button id="submitBtn">Get Prompt</button>
+
+  <pre id="output" style="background:#eee; padding:10px; margin-top:20px;"></pre>
+
+  <script>
+    const btn = document.getElementById('submitBtn');
+    const output = document.getElementById('output');
+
+    btn.onclick = async () => {
+      const imageUrl = document.getElementById('imgUrl').value.trim();
+      const language = document.getElementById('lang').value;
+      const model = document.getElementById('model').value;
+
+      if (!imageUrl) return alert('Enter an image URL!');
+
+      output.textContent = 'Loading...';
+
+      try {
+        const res = await fetch('/api/img2prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl, language, model })
+        });
+
+        const data = await res.json();
+        output.textContent = data.prompt || data.error;
+
+      } catch (err) {
+        output.textContent = 'Request failed: ' + err.message;
+      }
+    };
+  </script>
+</body>
+</html>
